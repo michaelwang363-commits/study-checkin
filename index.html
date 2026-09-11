@@ -31,7 +31,40 @@
     border-radius:8px;padding:5px 10px;font-size:13px;cursor:pointer
   }
   .wknav .range{flex:1;text-align:center;font-size:13px;color:var(--sub);font-variant-numeric:tabular-nums}
-  .card{background:var(--card);border-radius:14px;padding:14px;margin:10px 0;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card{background:var(--card);border-radius:14px;padding:14px;margin:10px 0;box-shadow:0 1px 3px rgba(16,24,40,.05);
+        border-top:4px solid var(--line);overflow:hidden}
+  /* 各板块独立配色 */
+  .card.c-blue  {border-top-color:#2563eb;background:linear-gradient(180deg,#f2f7ff 0,#fff 74px)}
+  .card.c-green {border-top-color:#16a34a;background:linear-gradient(180deg,#f1fbf4 0,#fff 74px)}
+  .card.c-purple{border-top-color:#7c3aed;background:linear-gradient(180deg,#f7f3ff 0,#fff 74px)}
+  .card.c-teal  {border-top-color:#0891b2;background:linear-gradient(180deg,#eefafd 0,#fff 74px)}
+  .card.c-orange{border-top-color:#ea580c;background:linear-gradient(180deg,#fff5ed 0,#fff 74px)}
+  .card.c-pink  {border-top-color:#db2777;background:linear-gradient(180deg,#fff1f7 0,#fff 74px)}
+  .c-pink  h2 .dot{background:#db2777}
+  .c-pink  h2{color:#be185d}
+  #trend{width:100%;height:210px;display:block;margin-top:2px}
+  .legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11.5px;color:var(--sub);margin-top:8px}
+  .legend .ln{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:4px;vertical-align:middle}
+  .card h2 .dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:0 0 9px;background:var(--line)}
+  .c-blue   h2 .dot{background:#2563eb}
+  .c-green  h2 .dot{background:#16a34a}
+  .c-purple h2 .dot{background:#7c3aed}
+  .c-teal   h2 .dot{background:#0891b2}
+  .c-orange h2 .dot{background:#ea580c}
+  .c-blue   h2{color:#1d4ed8} .c-green h2{color:#15803d} .c-purple h2{color:#6d28d9}
+  .c-teal   h2{color:#0e7490} .c-orange h2{color:#c2410c}
+  .c-green .btn{background:#16a34a} .c-orange .btn{background:#ea580c}
+  .c-green .btn.ghost{background:#fff;color:#15803d;border-color:#bbe7c8}
+  .c-orange .btn.ghost{background:#fff;color:#c2410c;border-color:#fcd9bd}
+  /* 周五通关庆祝 */
+  .card.party{border-top-color:#f59e0b;text-align:center;position:relative;
+    background:linear-gradient(160deg,#fff8e6,#ffeede 55%,#ffe6f0);border:1px solid #fbd9a5}
+  .party-emoji{font-size:34px;line-height:1;animation:pop .8s ease}
+  .party-title{font-size:16.5px;font-weight:700;color:#b45309;margin:7px 0 4px}
+  .party-sub{font-size:12.5px;color:#a16207;margin-bottom:10px}
+  .party-btn{background:#f59e0b !important;color:#fff !important}
+  @keyframes pop{0%{transform:scale(.3);opacity:0}60%{transform:scale(1.25)}100%{transform:scale(1);opacity:1}}
+  #fw{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:98;display:none}
   .card h2{font-size:15px;margin:0 0 10px;display:flex;align-items:center;gap:6px}
   .card h2 .tag{font-size:11px;font-weight:400;color:var(--sub);background:var(--gray-bg);border-radius:6px;padding:1px 6px}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -117,9 +150,17 @@
     </div>
   </header>
 
+  <!-- 周五解锁庆祝 -->
+  <section class="card party" id="partyCard" hidden>
+    <div class="party-emoji">🎉</div>
+    <div class="party-title">本周通关！周末游戏时间全部解锁</div>
+    <div class="party-sub" id="partySub"></div>
+    <button class="btn sm party-btn" id="partyAgain">再看一次烟花</button>
+  </section>
+
   <!-- 达标状态 -->
-  <section class="card">
-    <h2>本周达标情况 <span class="tag" id="gateTag"></span></h2>
+  <section class="card c-blue">
+    <h2><i class="dot"></i>本周达标情况 <span class="tag" id="gateTag"></span></h2>
     <div class="grid2">
       <div class="gate" id="gateXl">
         <div class="t">中午小练</div>
@@ -134,16 +175,9 @@
     </div>
   </section>
 
-  <!-- 周末游戏时间 -->
-  <section class="card">
-    <h2>周末游戏时间 <span class="tag">需已吃完饭</span></h2>
-    <div class="slots" id="slots"></div>
-    <div class="hint" id="weekdayHint"></div>
-  </section>
-
-  <!-- 每天记录 -->
-  <section class="card">
-    <h2>记录名次 <span class="tag">没考就不用填</span></h2>
+  <!-- 每天记录（已上移到达标情况之后） -->
+  <section class="card c-green">
+    <h2><i class="dot"></i>记录名次 <span class="tag">只填周一至周五</span></h2>
     <div class="row">
       <label for="dDate">日期</label>
       <input type="date" id="dDate">
@@ -161,15 +195,40 @@
     <div id="dayChips"></div>
   </section>
 
+  <!-- 周末游戏时间 -->
+  <section class="card c-purple">
+    <h2><i class="dot"></i>周末游戏时间 <span class="tag">需已吃完饭</span></h2>
+    <div class="slots" id="slots"></div>
+    <div class="hint" id="weekdayHint"></div>
+  </section>
+
   <!-- 本周明细 -->
-  <section class="card">
-    <h2>本周明细</h2>
+  <section class="card c-teal">
+    <h2><i class="dot"></i>本周明细 <span class="tag">周一至周五</span></h2>
     <div id="weekList"></div>
   </section>
 
+  <!-- 名次走势 -->
+  <section class="card c-pink">
+    <h2><i class="dot"></i>名次走势 <span class="tag" id="trendTag">长期</span></h2>
+    <div class="row" style="margin-bottom:4px">
+      <button class="btn sm gray" data-range="4">近4周</button>
+      <button class="btn sm gray" data-range="8">近8周</button>
+      <button class="btn sm gray" data-range="0">全部</button>
+    </div>
+    <canvas id="trend"></canvas>
+    <div class="legend">
+      <span><i class="ln" style="background:#2563eb"></i>小练周平均</span>
+      <span><i class="ln" style="background:#7c3aed"></i>默写周平均</span>
+      <span><i class="ln dash" style="background:#93c5fd"></i>≤25 名（小练线）</span>
+      <span><i class="ln dash" style="background:#c4b5fd"></i>≤20 名（默写线）</span>
+    </div>
+    <div class="hint" id="trendHint"></div>
+  </section>
+
   <!-- 成绩单 -->
-  <section class="card">
-    <h2>生成成绩单 <span class="tag">发给家长</span></h2>
+  <section class="card c-orange">
+    <h2><i class="dot"></i>生成成绩单 <span class="tag">发给家长</span></h2>
     <div class="row">
       <button class="btn" id="genReport">生成并分享</button>
       <button class="btn ghost" id="copyReport">复制文字</button>
@@ -205,6 +264,7 @@
 </div>
 
 <div class="toast" id="toast"></div>
+<canvas id="fw"></canvas>
 
 <script>
 /* ===================== 规则逻辑（可单独测试） ===================== */
@@ -273,8 +333,10 @@ function saveStore(){
   try{ localStorage.setItem(KEY, JSON.stringify(store)); }
   catch(e){ toast('本机存储不可用，请检查浏览器设置'); }
 }
+/* 只考核周一至周五：周六、周日不需要录入，也不计入判定 */
+function schoolDays(ws){ var a=[]; for(var i=0;i<5;i++) a.push(addDays(ws,i)); return a; }
 function recsOfWeek(ws){
-  var a = weekDates(ws), set = {};
+  var a = schoolDays(ws), set = {};
   for(var i=0;i<a.length;i++) set[fmtDate(a[i])] = 1;
   return store.recs.filter(function(r){ return set[r.date]; });
 }
@@ -381,9 +443,10 @@ function render(){
     ? '今天是周' + '一二三四五六日'[wd-1] + '，周一至周五不安排游戏时间。'
     : '周末游戏时间到点自动提示，全部时段都以“已吃完饭”为前提。';
 
-  /* 当天记录 */
-  $('dDate').min = fmtDate(ws); $('dDate').max = fmtDate(we);
-  if(curDate < fmtDate(ws) || curDate > fmtDate(we)) curDate = fmtDate(ws);
+  /* 当天记录（只允许周一至周五） */
+  var fri = fmtDate(addDays(ws, 4));
+  $('dDate').min = fmtDate(ws); $('dDate').max = fri;
+  if(curDate < fmtDate(ws) || curDate > fri) curDate = (todayStr >= fmtDate(ws) && todayStr <= fri) ? todayStr : fri;
   $('dDate').value = curDate;
   var dayRecs = recsOfDay(curDate);
   var dc = $('dayChips');
@@ -406,8 +469,8 @@ function render(){
     });
   });
 
-  /* 本周明细 */
-  var lw = weekDates(ws), names = ['周一','周二','周三','周四','周五','周六','周日'];
+  /* 本周明细（只列周一至周五） */
+  var lw = schoolDays(ws), names = ['周一','周二','周三','周四','周五'];
   var html = '';
   lw.forEach(function(d, i){
     var ds = fmtDate(d), rs = recsOfDay(ds);
@@ -435,26 +498,30 @@ function render(){
     }
     html += '</div>';
   });
+  html += '<div class="empty" style="border-top:1px solid var(--line);padding-top:8px">周六、周日无需记录</div>';
   $('weekList').innerHTML = html;
 
   /* 设置回填 */
   $('cXl').value = store.cfg.xlLimit;
   $('cMx').value = store.cfg.mxLimit;
   $('cMax').value = store.cfg.mxMax;
+
+  drawTrend();
+  checkParty(j, ws);
 }
 
 /* ===================== 成绩单 ===================== */
 function buildReport(){
   var ws = curWeek, we = addDays(ws,6);
   var recs = recsOfWeek(ws), j = judge(recs, store.cfg);
-  var names = ['周一','周二','周三','周四','周五','周六','周日'];
+  var names = ['周一','周二','周三','周四','周五'];
   var L = [];
   L.push('【初三学习打卡 · 本周成绩单】');
-  L.push('周期：' + fmtDate(ws) + '（周一）— ' + fmtDate(we) + '（周日）');
+  L.push('周期：' + fmtDate(ws) + '（周一）— ' + fmtDate(we) + '（周日）；录入范围：周一至周五');
   L.push('');
   L.push('—— 中午小练（每次都要在前' + store.cfg.xlLimit + '名）——');
   var anyXl = false;
-  weekDates(ws).forEach(function(d,i){
+  schoolDays(ws).forEach(function(d,i){
     recs.filter(function(r){return r.date===fmtDate(d)&&r.type==='xl';}).forEach(function(r){
       anyXl = true;
       L.push(fmtDate(d).slice(5) + ' ' + names[i] + '  第' + r.rank + '名  ' +
@@ -468,7 +535,7 @@ function buildReport(){
   L.push('');
   L.push('—— 默写（名次>' + store.cfg.mxLimit + ' 不超过 ' + store.cfg.mxMax + ' 次）——');
   var anyMx = false;
-  weekDates(ws).forEach(function(d,i){
+  schoolDays(ws).forEach(function(d,i){
     recs.filter(function(r){return r.date===fmtDate(d)&&r.type==='mx';}).forEach(function(r){
       anyMx = true;
       L.push(fmtDate(d).slice(5) + ' ' + names[i] + '  第' + r.rank + '名  ' +
@@ -493,9 +560,210 @@ function buildReport(){
   return L.join('\n');
 }
 
+/* ===================== 名次走势图 ===================== */
+var trendRange = 8;   /* 0 = 全部 */
+
+function weeklyStats(){
+  var map = {};
+  store.recs.forEach(function(r){
+    var k = fmtDate(weekStart(parseDate(r.date)));
+    if(!map[k]) map[k] = { key:k, xl:[], mx:[] };
+    (r.type==='xl' ? map[k].xl : map[k].mx).push(r.rank);
+  });
+  return Object.keys(map).sort().map(function(k){
+    var o = map[k];
+    var recs = o.xl.map(function(x){ return {type:'xl',rank:x}; })
+                .concat(o.mx.map(function(x){ return {type:'mx',rank:x}; }));
+    var j = judge(recs, store.cfg);
+    var avg = function(a){ var s=0; for(var i=0;i<a.length;i++) s+=a[i]; return a.length ? s/a.length : null; };
+    return { key:k, ws:parseDate(k),
+             xlAvg:avg(o.xl), mxAvg:avg(o.mx), xlN:o.xl.length, mxN:o.mx.length,
+             xlOk:j.xl.total? j.xl.ok : null, mxOk:j.mx.total? j.mx.ok : null };
+  });
+}
+
+function drawTrend(){
+  var cv = $('trend'); if(!cv || !cv.getContext) return;
+  var all = weeklyStats();
+  var data = trendRange > 0 ? all.slice(-trendRange) : all;
+  $('trendTag').textContent = trendRange > 0 ? ('近' + trendRange + '周') : '全部';
+  $('trendHint').textContent = all.length
+    ? ('共 ' + all.length + ' 周有记录 · 纵轴越靠上名次越好（第1名在顶部）· 两条虚线是达标线')
+    : '';
+
+  var dpr = window.devicePixelRatio || 1;
+  var W = cv.clientWidth || 320, H = 210;
+  cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr);
+  var g = cv.getContext ? cv.getContext('2d') : null;
+  if(!g) return;                 /* 画布不可用时静默跳过，不能中断整个渲染 */
+  g.setTransform(dpr,0,0,dpr,0,0);
+  g.clearRect(0,0,W,H);
+
+  if(!data.length){
+    g.fillStyle = '#9aa1ad'; g.font = '13px -apple-system,sans-serif'; g.textAlign = 'center';
+    g.fillText('还没有记录，录入名次后这里会出现走势', W/2, H/2);
+    return;
+  }
+
+  var padL = 30, padR = 12, padT = 12, padB = 34;
+  var plotW = Math.max(10, W - padL - padR), plotH = H - padT - padB;
+
+  var maxR = 1;
+  data.forEach(function(d){
+    if(d.xlAvg) maxR = Math.max(maxR, d.xlAvg);
+    if(d.mxAvg) maxR = Math.max(maxR, d.mxAvg);
+  });
+  var yMax = Math.max(store.cfg.xlLimit + 5, Math.ceil(maxR/10)*10);
+  var y = function(rank){ return padT + (Math.min(rank, yMax) - 1) / (yMax - 1) * plotH; };
+  var x = function(i){ return data.length === 1 ? padL + plotW/2 : padL + i/(data.length-1)*plotW; };
+
+  /* 网格与纵轴刻度 */
+  g.strokeStyle = '#eceff4'; g.lineWidth = 1;
+  g.fillStyle = '#9aa1ad'; g.font = '10px -apple-system,sans-serif'; g.textAlign = 'right';
+  var step = yMax <= 20 ? 5 : (yMax <= 50 ? 10 : 20);
+  for(var r = 1; r <= yMax; r += step){
+    var yy = y(r);
+    g.beginPath(); g.moveTo(padL, yy); g.lineTo(padL+plotW, yy); g.stroke();
+    g.fillText('第'+r, padL-4, yy+3.5);
+  }
+
+  /* 达标线 */
+  var dash = function(rank, color, label){
+    if(rank > yMax) return;
+    g.save(); g.setLineDash([5,4]); g.strokeStyle = color; g.lineWidth = 1.2;
+    g.beginPath(); g.moveTo(padL, y(rank)); g.lineTo(padL+plotW, y(rank)); g.stroke(); g.restore();
+  };
+  dash(store.cfg.xlLimit, '#93c5fd');
+  dash(store.cfg.mxLimit, '#c4b5fd');
+
+  /* 折线 */
+  var series = function(key, color){
+    g.strokeStyle = color; g.lineWidth = 2; g.lineJoin = 'round';
+    var started = false;
+    g.beginPath();
+    data.forEach(function(d, i){
+      var v = d[key]; if(v == null) return;
+      if(!started){ g.moveTo(x(i), y(v)); started = true; } else { g.lineTo(x(i), y(v)); }
+    });
+    g.stroke();
+    data.forEach(function(d, i){
+      var v = d[key]; if(v == null) return;
+      g.fillStyle = '#fff'; g.strokeStyle = color; g.lineWidth = 2;
+      g.beginPath(); g.arc(x(i), y(v), 3.4, 0, Math.PI*2); g.fill(); g.stroke();
+    });
+  };
+  series('xlAvg', '#2563eb');
+  series('mxAvg', '#7c3aed');
+
+  /* 横轴：周标签 + 达标标记 */
+  g.textAlign = 'center'; g.font = '10px -apple-system,sans-serif';
+  var every = Math.ceil(data.length / (W < 380 ? 4 : 6));
+  data.forEach(function(d, i){
+    if(i % every !== 0 && i !== data.length-1) return;
+    g.fillStyle = '#9aa1ad';
+    g.fillText((d.ws.getMonth()+1) + '/' + d.ws.getDate(), x(i), padT+plotH+14);
+    var marks = [];
+    if(d.xlOk === true) marks.push('练✓'); else if(d.xlOk === false) marks.push('练✗');
+    if(d.mxOk === true) marks.push('默✓'); else if(d.mxOk === false) marks.push('默✗');
+    g.fillStyle = (d.xlOk === false || d.mxOk === false) ? '#dc2626'
+                : ((d.xlOk === true || d.mxOk === true) ? '#16a34a' : '#c3c8d2');
+    g.font = '9px -apple-system,sans-serif';
+    g.fillText(marks.join(' '), x(i), padT+plotH+26);
+    g.font = '10px -apple-system,sans-serif';
+  });
+}
+
+/* ===================== 周五解锁庆祝 ===================== */
+function weekKeyOf(ws){ return fmtDate(ws); }
+
+function shouldParty(j, ws){
+  var today = new Date(), todayStr = fmtDate(today);
+  var fri = fmtDate(addDays(ws, 4));
+  if(todayStr < fri) return false;              /* 周五之前不算本周通关 */
+  if(!(j.xl.ok && j.mx.ok)) return false;
+  if(j.xl.total === 0 && j.mx.total === 0) return false;  /* 完全没记录就不庆祝 */
+  return true;
+}
+
+function checkParty(j, ws){
+  var card = $('partyCard');
+  var on = shouldParty(j, ws);
+  card.hidden = !on;
+  if(!on) return;
+  var key = weekKeyOf(ws);
+  $('partySub').textContent = '小练达标 ✓　默写达标 ✓　周六、周日四个时段全部开放（记得吃完饭打勾）';
+  if(!store.party || !store.party[key]){
+    if(!store.party) store.party = {};
+    store.party[key] = 1;
+    saveStore();
+    setTimeout(function(){ fireworks(2600); }, 220);
+  }
+}
+
+/* ===================== 烟花 ===================== */
+var fwTimer = null;
+function fireworks(durationMs){
+  var cv = $('fw'); if(!cv || !cv.getContext) return;
+  var W = window.innerWidth, H = window.innerHeight;
+  var dpr = window.devicePixelRatio || 1;
+  cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr);
+  var g = cv.getContext('2d');
+  if(!g) return;
+  cv.style.display = 'block';
+  g.setTransform(dpr,0,0,dpr,0,0);
+
+  var parts = [], colors = ['#ff4d6d','#ffd166','#4cc9f0','#a78bfa','#34d399','#f97316','#f472b6'];
+  function burst(cx, cy){
+    var n = 46 + Math.floor(Math.random()*22);
+    var col = colors[Math.floor(Math.random()*colors.length)];
+    for(var i=0;i<n;i++){
+      var a = Math.PI*2*i/n + Math.random()*0.25;
+      var sp = 1.6 + Math.random()*3.4;
+      parts.push({ x:cx, y:cy, vx:Math.cos(a)*sp, vy:Math.sin(a)*sp - 1.1,
+                   life:1, decay:0.012 + Math.random()*0.012,
+                   col: Math.random()<0.35 ? colors[Math.floor(Math.random()*colors.length)] : col });
+    }
+  }
+  var start = Date.now(), nextBurst = 0;
+  if(fwTimer) cancelAnimationFrame(fwTimer);
+
+  (function loop(){
+    var t = Date.now() - start;
+    if(t > durationMs && parts.length === 0){
+      g.clearRect(0,0,W,H); cv.style.display = 'none'; return;
+    }
+    if(t < durationMs - 500 && t > nextBurst){
+      burst(W*(0.18 + Math.random()*0.64), H*(0.14 + Math.random()*0.42));
+      nextBurst = t + 260 + Math.random()*260;
+    }
+    g.globalCompositeOperation = 'destination-out';
+    g.fillStyle = 'rgba(0,0,0,0.16)'; g.fillRect(0,0,W,H);
+    g.globalCompositeOperation = 'lighter';
+    for(var i=parts.length-1;i>=0;i--){
+      var p = parts[i];
+      p.vy += 0.045; p.vx *= 0.985; p.vy *= 0.985;
+      p.x += p.vx; p.y += p.vy; p.life -= p.decay;
+      if(p.life <= 0){ parts.splice(i,1); continue; }
+      g.globalAlpha = Math.max(0, p.life);
+      g.fillStyle = p.col;
+      g.beginPath(); g.arc(p.x, p.y, 2.1, 0, Math.PI*2); g.fill();
+    }
+    g.globalAlpha = 1;
+    fwTimer = requestAnimationFrame(loop);
+  })();
+}
+
 /* ===================== 事件 ===================== */
 $('prevWk').addEventListener('click', function(){ curWeek = addDays(curWeek,-7); render(); });
 $('nextWk').addEventListener('click', function(){ curWeek = addDays(curWeek, 7); render(); });
+$('partyAgain').addEventListener('click', function(){ fireworks(2600); });
+document.querySelectorAll('[data-range]').forEach(function(b){
+  b.addEventListener('click', function(){
+    trendRange = parseInt(b.getAttribute('data-range'), 10);
+    drawTrend();
+  });
+});
+window.addEventListener('resize', function(){ drawTrend(); });
 $('dDate').addEventListener('change', function(){ curDate = $('dDate').value || curDate; render(); });
 
 function addRec(type, inputEl){
