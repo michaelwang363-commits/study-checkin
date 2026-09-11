@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#2563eb">
+<title>初三学习打卡</title>
+<style>
+  :root{
+    --bg:#f4f6fb; --card:#ffffff; --line:#e6e9f0; --txt:#1f2430; --sub:#6b7280;
+    --blue:#2563eb; --green:#16a34a; --red:#dc2626; --amber:#d97706;
+    --green-bg:#eafaf0; --red-bg:#fdeeee; --gray-bg:#f0f2f7;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    font-size:15px;line-height:1.5;
+    padding:0 0 calc(28px + env(safe-area-inset-bottom));
+  }
+  .wrap{max-width:560px;margin:0 auto;padding:0 12px}
+  header{padding:calc(14px + env(safe-area-inset-top)) 4px 10px}
+  h1{font-size:20px;margin:0 0 4px;letter-spacing:.5px}
+  .wknav{display:flex;align-items:center;gap:8px;margin-top:8px}
+  .wknav button{
+    border:1px solid var(--line);background:#fff;color:var(--sub);
+    border-radius:8px;padding:5px 10px;font-size:13px;cursor:pointer
+  }
+  .wknav .range{flex:1;text-align:center;font-size:13px;color:var(--sub);font-variant-numeric:tabular-nums}
+  .card{background:var(--card);border-radius:14px;padding:14px;margin:10px 0;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:15px;margin:0 0 10px;display:flex;align-items:center;gap:6px}
+  .card h2 .tag{font-size:11px;font-weight:400;color:var(--sub);background:var(--gray-bg);border-radius:6px;padding:1px 6px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .gate{border-radius:12px;padding:11px 12px;border:1px solid transparent}
+  .gate.ok{background:var(--green-bg);border-color:#c8ecd6}
+  .gate.no{background:var(--red-bg);border-color:#f6cccc}
+  .gate.wait{background:var(--gray-bg);border-color:var(--line)}
+  .gate .t{font-size:13px;color:var(--sub);margin-bottom:3px}
+  .gate .v{font-size:16px;font-weight:600}
+  .gate.ok .v{color:var(--green)} .gate.no .v{color:var(--red)} .gate.wait .v{color:var(--sub)}
+  .gate .d{font-size:12px;color:var(--sub);margin-top:4px;font-variant-numeric:tabular-nums}
+  .slots{display:flex;flex-direction:column;gap:8px}
+  .slot{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px}
+  .slot .info{flex:1;min-width:0}
+  .slot .n{font-size:14px;font-weight:600}
+  .slot .tm{font-size:12.5px;color:var(--sub);font-variant-numeric:tabular-nums}
+  .slot .st{font-size:12.5px;margin-top:3px}
+  .slot.locked{opacity:.62;background:#fafbfe}
+  .slot.unlocked{border-color:#c8ecd6;background:var(--green-bg)}
+  .slot.now{border-color:var(--blue);box-shadow:0 0 0 2px rgba(37,99,235,.12)}
+  .pill{display:inline-block;font-size:11.5px;border-radius:999px;padding:1px 8px;font-weight:600}
+  .pill.ok{background:#d7f3e2;color:#0f7a3d}
+  .pill.no{background:#fbdada;color:#b91c1c}
+  .pill.blue{background:#dbeafe;color:#1d4ed8}
+  .meal{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--sub);white-space:nowrap}
+  .meal input{width:17px;height:17px;accent-color:var(--blue)}
+  .row{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+  .row label{font-size:13.5px;color:var(--sub);min-width:64px}
+  input[type=number],input[type=date]{
+    font:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:10px;
+    background:#fff;color:var(--txt);min-width:0;flex:1
+  }
+  input[type=number]{font-variant-numeric:tabular-nums}
+  .btn{
+    font:inherit;font-weight:600;border-radius:10px;padding:9px 14px;border:1px solid transparent;
+    background:var(--blue);color:#fff;cursor:pointer
+  }
+  .btn.ghost{background:#fff;color:var(--blue);border-color:#c7d7fb}
+  .btn.gray{background:var(--gray-bg);color:var(--sub);border-color:var(--line)}
+  .btn.sm{padding:6px 10px;font-size:13px;font-weight:500}
+  .btn:active{transform:translateY(1px)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .chip{
+    display:inline-flex;align-items:center;gap:6px;background:var(--gray-bg);border-radius:999px;
+    padding:5px 6px 5px 11px;font-size:13.5px;font-variant-numeric:tabular-nums
+  }
+  .chip.bad{background:var(--red-bg);color:#b91c1c}
+  .chip.good{background:var(--green-bg);color:#0f7a3d}
+  .chip b{font-weight:700}
+  .chip .x{border:0;background:transparent;color:inherit;opacity:.5;font-size:15px;cursor:pointer;padding:0 3px;line-height:1}
+  .chip .x:active{opacity:1}
+  .day{border-top:1px solid var(--line);padding:9px 0}
+  .day:first-child{border-top:0}
+  .day .dh{display:flex;justify-content:space-between;font-size:13px;color:var(--sub);margin-bottom:5px}
+  .day.today .dh{color:var(--blue);font-weight:600}
+  .empty{color:var(--sub);font-size:13px;padding:6px 0}
+  textarea{
+    width:100%;font:inherit;font-size:13px;line-height:1.6;border:1px solid var(--line);
+    border-radius:10px;padding:10px;background:#fff;min-height:190px;resize:vertical;
+    font-variant-numeric:tabular-nums
+  }
+  details.set{border-top:1px solid var(--line);margin-top:10px;padding-top:10px}
+  details.set summary{font-size:13.5px;color:var(--sub);cursor:pointer}
+  .hint{font-size:12.5px;color:var(--sub);margin-top:6px}
+  .toast{
+    position:fixed;left:50%;bottom:calc(26px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);
+    background:rgba(31,36,48,.94);color:#fff;padding:10px 16px;border-radius:10px;font-size:13.5px;
+    opacity:0;transition:.22s;pointer-events:none;z-index:99;max-width:88vw;text-align:center
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .kw{color:var(--sub);font-size:12.5px;text-align:center;margin:16px 0 0;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>初三学习打卡</h1>
+    <div class="wknav">
+      <button id="prevWk">上一周</button>
+      <div class="range" id="wkRange">—</div>
+      <button id="nextWk">下一周</button>
+    </div>
+  </header>
+
+  <!-- 达标状态 -->
+  <section class="card">
+    <h2>本周达标情况 <span class="tag" id="gateTag"></span></h2>
+    <div class="grid2">
+      <div class="gate" id="gateXl">
+        <div class="t">中午小练</div>
+        <div class="v" id="xlVerdict">—</div>
+        <div class="d" id="xlDetail">—</div>
+      </div>
+      <div class="gate" id="gateMx">
+        <div class="t">默写（名次&gt;20 上限 3 次）</div>
+        <div class="v" id="mxVerdict">—</div>
+        <div class="d" id="mxDetail">—</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 周末游戏时间 -->
+  <section class="card">
+    <h2>周末游戏时间 <span class="tag">需已吃完饭</span></h2>
+    <div class="slots" id="slots"></div>
+    <div class="hint" id="weekdayHint"></div>
+  </section>
+
+  <!-- 每天记录 -->
+  <section class="card">
+    <h2>记录名次 <span class="tag">没考就不用填</span></h2>
+    <div class="row">
+      <label for="dDate">日期</label>
+      <input type="date" id="dDate">
+    </div>
+    <div class="row">
+      <label for="xlRank">中午小练</label>
+      <input type="number" id="xlRank" inputmode="numeric" min="1" max="200" placeholder="填名次，如 12">
+      <button class="btn sm" id="addXl">记录</button>
+    </div>
+    <div class="row">
+      <label for="mxRank">默写</label>
+      <input type="number" id="mxRank" inputmode="numeric" min="1" max="200" placeholder="填名次，一天可多次">
+      <button class="btn sm" id="addMx">添加</button>
+    </div>
+    <div id="dayChips"></div>
+  </section>
+
+  <!-- 本周明细 -->
+  <section class="card">
+    <h2>本周明细</h2>
+    <div id="weekList"></div>
+  </section>
+
+  <!-- 成绩单 -->
+  <section class="card">
+    <h2>生成成绩单 <span class="tag">发给家长</span></h2>
+    <div class="row">
+      <button class="btn" id="genReport">生成并分享</button>
+      <button class="btn ghost" id="copyReport">复制文字</button>
+    </div>
+    <textarea id="report" readonly placeholder="点“生成并分享”，把成绩单发到微信给家长。"></textarea>
+
+    <details class="set">
+      <summary>设置与数据</summary>
+      <div class="row" style="margin-top:10px">
+        <label for="cXl">小练名次上限</label>
+        <input type="number" id="cXl" inputmode="numeric" min="1">
+      </div>
+      <div class="row">
+        <label for="cMx">默写名次上限</label>
+        <input type="number" id="cMx" inputmode="numeric" min="1">
+      </div>
+      <div class="row">
+        <label for="cMax">默写超限次数上限</label>
+        <input type="number" id="cMax" inputmode="numeric" min="0">
+      </div>
+      <div class="row">
+        <button class="btn sm ghost" id="saveCfg">保存设置</button>
+        <button class="btn sm gray" id="exportData">导出备份</button>
+        <button class="btn sm gray" id="importData">导入备份</button>
+        <button class="btn sm gray" id="clearData">清空全部数据</button>
+      </div>
+      <input type="file" id="importFile" accept=".json,application/json" style="display:none">
+      <div class="hint">数据保存在本机浏览器中，请勿清理浏览器数据，建议每周点一次“导出备份”。换手机或换网址时，用“导入备份”恢复。</div>
+    </details>
+  </section>
+
+  <p class="kw">达标才算数 · 说到做到<br>小练每次都要在前25名，默写最多3次掉出前20名</p>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================== 规则逻辑（可单独测试） ===================== */
+/* LOGIC-START */
+var DEFAULT_CFG = { xlLimit: 25, mxLimit: 20, mxMax: 3 };
+
+var SLOTS = [
+  { id:'sat-noon',  name:'周六中午', time:'12:00—13:00', wd:6, req:'xl', start:12*60,    end:13*60 },
+  { id:'sat-eve',   name:'周六傍晚', time:'18:00—19:00', wd:6, req:'xl', start:18*60,    end:19*60 },
+  { id:'sat-night', name:'周六晚上', time:'21:50—23:00', wd:6, req:'mx', start:21*60+50, end:23*60 },
+  { id:'sun-noon',  name:'周日中午', time:'12:00—13:00', wd:0, req:'mx', start:12*60,    end:13*60 }
+];
+
+function pad2(n){ return (n<10?'0':'') + n; }
+function fmtDate(d){ return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); }
+function parseDate(s){ var p=s.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
+function addDays(d,n){ var x=new Date(d.getFullYear(),d.getMonth(),d.getDate()); x.setDate(x.getDate()+n); return x; }
+/* 以周一为一周的第一天 */
+function weekStart(d){
+  var x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  var wd = x.getDay();                 /* 0=周日 */
+  return addDays(x, wd===0 ? -6 : 1-wd);
+}
+function weekDates(ws){ var a=[]; for(var i=0;i<7;i++) a.push(addDays(ws,i)); return a; }
+/* 某个游戏时段在本周对应的实际日期 */
+function slotDate(ws, slot){ return addDays(ws, slot.wd===0 ? 6 : slot.wd-1); }
+
+/* 核心判定：小练每次都必须 <= xlLimit；默写名次 > mxLimit 的次数 <= mxMax。
+   按字面规则：本周没有记录时该项视为达标（界面会以灰色"无记录"提示，避免悄悄解锁）。 */
+function judge(recs, cfg){
+  cfg = cfg || DEFAULT_CFG;
+  var xl=[], mx=[], i, r;
+  for(i=0;i<recs.length;i++){
+    r = recs[i];
+    if(r.type==='xl') xl.push(r); else if(r.type==='mx') mx.push(r);
+  }
+  var xlBad=[], mxBad=[];
+  for(i=0;i<xl.length;i++) if(xl[i].rank > cfg.xlLimit) xlBad.push(xl[i]);
+  for(i=0;i<mx.length;i++) if(mx[i].rank > cfg.mxLimit) mxBad.push(mx[i]);
+  var xlWorst=null, xlBest=null;
+  for(i=0;i<xl.length;i++){
+    if(xlWorst===null || xl[i].rank>xlWorst) xlWorst=xl[i].rank;
+    if(xlBest===null || xl[i].rank<xlBest) xlBest=xl[i].rank;
+  }
+  return {
+    xl:{ total:xl.length, bad:xlBad.length, ok:xlBad.length===0, worst:xlWorst, best:xlBest },
+    mx:{ total:mx.length, bad:mxBad.length, ok:mxBad.length<=cfg.mxMax, left:cfg.mxMax-mxBad.length }
+  };
+}
+/* LOGIC-END */
+
+/* ===================== 数据存取 ===================== */
+var KEY = 'c3_study_v1';
+var store = loadStore();
+var curWeek = weekStart(new Date());
+var curDate = fmtDate(new Date());
+
+function loadStore(){
+  try{
+    var o = JSON.parse(localStorage.getItem(KEY));
+    if(o && o.recs) { o.cfg = Object.assign({}, DEFAULT_CFG, o.cfg||{}); o.meal = o.meal||{}; return o; }
+  }catch(e){}
+  return { v:1, cfg:Object.assign({},DEFAULT_CFG), recs:[], meal:{} };
+}
+function saveStore(){
+  try{ localStorage.setItem(KEY, JSON.stringify(store)); }
+  catch(e){ toast('本机存储不可用，请检查浏览器设置'); }
+}
+function recsOfWeek(ws){
+  var a = weekDates(ws), set = {};
+  for(var i=0;i<a.length;i++) set[fmtDate(a[i])] = 1;
+  return store.recs.filter(function(r){ return set[r.date]; });
+}
+function recsOfDay(ds){
+  return store.recs.filter(function(r){ return r.date===ds; });
+}
+
+/* ===================== 界面 ===================== */
+var $ = function(id){ return document.getElementById(id); };
+
+function toast(msg){
+  var t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._h); t._h = setTimeout(function(){ t.classList.remove('show'); }, 1900);
+}
+
+function nowMinutes(){ var d=new Date(); return d.getHours()*60 + d.getMinutes(); }
+
+function render(){
+  var ws = curWeek, we = addDays(ws,6);
+  $('wkRange').textContent = fmtDate(ws).slice(5).replace('-','/') + ' — ' + fmtDate(we).slice(5).replace('-','/');
+
+  var weekRecs = recsOfWeek(ws);
+  var j = judge(weekRecs, store.cfg);
+
+  /* 达标卡 */
+  var gx = $('gateXl'), gm = $('gateMx');
+  gx.className = 'gate'; gm.className = 'gate';
+  if(j.xl.total===0){
+    gx.classList.add('wait'); $('xlVerdict').textContent='无记录';
+    $('xlDetail').textContent='按规则暂视为达标 · 本周还没记小练名次';
+  }else if(j.xl.ok){
+    gx.classList.add('ok'); $('xlVerdict').textContent='达标';
+    $('xlDetail').textContent='已记 '+j.xl.total+' 次 · 最好第'+j.xl.best+'名 · 最差第'+j.xl.worst+'名';
+  }else{
+    gx.classList.add('no'); $('xlVerdict').textContent='已不达标';
+    $('xlDetail').textContent='已记 '+j.xl.total+' 次 · 有 '+j.xl.bad+' 次掉出前'+store.cfg.xlLimit+'名';
+  }
+  if(j.mx.total===0){
+    gm.className='gate wait'; $('mxVerdict').textContent='无记录';
+    $('mxDetail').textContent='按规则暂视为达标 · 本周还没记默写名次';
+  }else if(j.mx.ok){
+    gm.classList.add('ok'); $('mxVerdict').textContent='达标';
+    $('mxDetail').textContent='共 '+j.mx.total+' 次 · 超限 '+j.mx.bad+' 次 · 还剩 '+j.mx.left+' 次';
+  }else{
+    gm.classList.add('no'); $('mxVerdict').textContent='已不达标';
+    $('mxDetail').textContent='共 '+j.mx.total+' 次 · 超限 '+j.mx.bad+' 次（上限 '+store.cfg.mxMax+' 次）';
+  }
+  $('gateTag').textContent = '小练 ' + (j.xl.total===0 ? '—' : (j.xl.ok?'达标✓':'不达标✗')) +
+                             ' · 默写 ' + (j.mx.total===0 ? '—' : (j.mx.ok?'达标✓':'不达标✗'));
+
+  /* 游戏时段 */
+  var today = new Date(), todayStr = fmtDate(today), nowM = nowMinutes();
+  var box = $('slots'); box.innerHTML = '';
+  SLOTS.forEach(function(s){
+    var unlocked = (s.req==='xl') ? j.xl.ok : j.mx.ok;
+    var gateEmpty = (s.req==='xl') ? (j.xl.total===0) : (j.mx.total===0);
+    var sd = fmtDate(slotDate(ws, s));
+    var isToday = (sd === todayStr), isPast = (sd < todayStr), isFuture = (sd > todayStr);
+    var playing = isToday && nowM>=s.start && nowM<s.end;
+    var mealKey = sd + '|' + s.id;
+    var ate = !!store.meal[mealKey];
+    var needTxt = (s.req==='xl') ? '中午小练' : '默写';
+    var emptyNote = gateEmpty ? '（本周无记录）' : '';
+
+    var el = document.createElement('div');
+    el.className = 'slot ' + (unlocked ? 'unlocked':'locked') + (playing ? ' now':'');
+    var status, mealHtml = '';
+    if(!unlocked){
+      status = '<span class="pill no">未解锁</span> <span style="color:var(--sub)">（需' + needTxt + '达标）</span>';
+    }else if(isFuture){
+      status = '<span class="pill blue">暂时达标</span> <span style="color:var(--sub)">' + emptyNote +
+               '保持到 ' + sd.slice(5).replace('-','/') + ' 即可玩</span>';
+    }else if(isToday){
+      mealHtml = '<label class="meal"><input type="checkbox" data-meal="'+mealKey+'"'+(ate?' checked':'')+'>吃完饭</label>';
+      if(!ate){
+        status = '<span class="pill blue">已解锁</span> <span style="color:var(--sub)">' + emptyNote +
+                 '吃完饭请家长在这里打勾</span>';
+      }else{
+        status = '<span class="pill ok">' + (playing ? '现在可以玩' : '可以玩') + '</span>';
+      }
+    }else{
+      status = ate
+        ? '<span class="pill ok">已使用</span>'
+        : '<span class="pill no">已过期</span> <span style="color:var(--sub)">（当时未打卡）</span>';
+    }
+
+    el.innerHTML =
+      '<div class="info">' +
+        '<div class="n">' + s.name + ' <span class="tm">' + s.time + '</span></div>' +
+        '<div class="tm">' + sd.slice(5).replace('-','/') + (isToday?' · 今天':'') + '</div>' +
+        '<div class="st">' + status + '</div>' +
+      '</div>' + mealHtml;
+    box.appendChild(el);
+  });
+  box.querySelectorAll('input[data-meal]').forEach(function(cb){
+    cb.addEventListener('change', function(){
+      store.meal[cb.getAttribute('data-meal')] = cb.checked;
+      saveStore(); render();
+    });
+  });
+
+  var wd = today.getDay();
+  $('weekdayHint').textContent = (wd>=1 && wd<=5)
+    ? '今天是周' + '一二三四五六日'[wd-1] + '，周一至周五不安排游戏时间。'
+    : '周末游戏时间到点自动提示，全部时段都以“已吃完饭”为前提。';
+
+  /* 当天记录 */
+  $('dDate').min = fmtDate(ws); $('dDate').max = fmtDate(we);
+  if(curDate < fmtDate(ws) || curDate > fmtDate(we)) curDate = fmtDate(ws);
+  $('dDate').value = curDate;
+  var dayRecs = recsOfDay(curDate);
+  var dc = $('dayChips');
+  if(!dayRecs.length){ dc.innerHTML = '<div class="empty">这天还没有记录。</div>'; }
+  else{
+    dc.innerHTML = '<div class="chips">' + dayRecs.map(function(r){
+      var cls = r.type==='xl'
+        ? (r.rank<=store.cfg.xlLimit?'good':'bad')
+        : (r.rank<=store.cfg.mxLimit?'good':'bad');
+      var label = (r.type==='xl'?'小练':'默写');
+      return '<span class="chip '+cls+'">'+label+' <b>第'+r.rank+'名</b>'+
+             '<button class="x" data-del="'+r.id+'">×</button></span>';
+    }).join('') + '</div>';
+  }
+  dc.querySelectorAll('button[data-del]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var id = b.getAttribute('data-del');
+      store.recs = store.recs.filter(function(r){ return r.id !== id; });
+      saveStore(); render(); toast('已删除');
+    });
+  });
+
+  /* 本周明细 */
+  var lw = weekDates(ws), names = ['周一','周二','周三','周四','周五','周六','周日'];
+  var html = '';
+  lw.forEach(function(d, i){
+    var ds = fmtDate(d), rs = recsOfDay(ds);
+    var isToday = ds === todayStr;
+    html += '<div class="day'+(isToday?' today':'')+'"><div class="dh"><span>'+names[i]+
+            (isToday?' · 今天':'')+'</span><span>'+ds.slice(5).replace('-','/')+'</span></div>';
+    if(!rs.length){ html += '<div class="empty">无记录</div>'; }
+    else{
+      var xlr = rs.filter(function(r){return r.type==='xl';});
+      var mxr = rs.filter(function(r){return r.type==='mx';});
+      html += '<div class="chips">';
+      if(xlr.length){
+        html += xlr.map(function(r){
+          var ok = r.rank<=store.cfg.xlLimit;
+          return '<span class="chip '+(ok?'good':'bad')+'">小练 <b>第'+r.rank+'名</b></span>';
+        }).join('');
+      }else{
+        html += '<span class="chip" style="color:var(--sub)">小练 未考</span>';
+      }
+      html += mxr.map(function(r){
+        var ok = r.rank<=store.cfg.mxLimit;
+        return '<span class="chip '+(ok?'good':'bad')+'">默写 <b>第'+r.rank+'名</b></span>';
+      }).join('');
+      html += '</div>';
+    }
+    html += '</div>';
+  });
+  $('weekList').innerHTML = html;
+
+  /* 设置回填 */
+  $('cXl').value = store.cfg.xlLimit;
+  $('cMx').value = store.cfg.mxLimit;
+  $('cMax').value = store.cfg.mxMax;
+}
+
+/* ===================== 成绩单 ===================== */
+function buildReport(){
+  var ws = curWeek, we = addDays(ws,6);
+  var recs = recsOfWeek(ws), j = judge(recs, store.cfg);
+  var names = ['周一','周二','周三','周四','周五','周六','周日'];
+  var L = [];
+  L.push('【初三学习打卡 · 本周成绩单】');
+  L.push('周期：' + fmtDate(ws) + '（周一）— ' + fmtDate(we) + '（周日）');
+  L.push('');
+  L.push('—— 中午小练（每次都要在前' + store.cfg.xlLimit + '名）——');
+  var anyXl = false;
+  weekDates(ws).forEach(function(d,i){
+    recs.filter(function(r){return r.date===fmtDate(d)&&r.type==='xl';}).forEach(function(r){
+      anyXl = true;
+      L.push(fmtDate(d).slice(5) + ' ' + names[i] + '  第' + r.rank + '名  ' +
+             (r.rank<=store.cfg.xlLimit?'✓ 达标':'✗ 掉出前'+store.cfg.xlLimit));
+    });
+  });
+  if(!anyXl) L.push('（本周无记录）');
+  L.push('小练判定：' + (j.xl.total===0 ? '本周无记录，按规则视为达标' :
+        (j.xl.ok ? '达标（共'+j.xl.total+'次，全部在前'+store.cfg.xlLimit+'名）'
+                 : '不达标（共'+j.xl.total+'次，有'+j.xl.bad+'次掉出前'+store.cfg.xlLimit+'名）')));
+  L.push('');
+  L.push('—— 默写（名次>' + store.cfg.mxLimit + ' 不超过 ' + store.cfg.mxMax + ' 次）——');
+  var anyMx = false;
+  weekDates(ws).forEach(function(d,i){
+    recs.filter(function(r){return r.date===fmtDate(d)&&r.type==='mx';}).forEach(function(r){
+      anyMx = true;
+      L.push(fmtDate(d).slice(5) + ' ' + names[i] + '  第' + r.rank + '名  ' +
+             (r.rank<=store.cfg.mxLimit?'✓':'✗ 超限'));
+    });
+  });
+  if(!anyMx) L.push('（本周无记录）');
+  L.push('默写判定：' + (j.mx.total===0 ? '本周无记录，按规则视为达标' :
+        (j.mx.ok ? '达标（共'+j.mx.total+'次，超限'+j.mx.bad+'次，未超过'+store.cfg.mxMax+'次）'
+                 : '不达标（共'+j.mx.total+'次，超限'+j.mx.bad+'次，已超过'+store.cfg.mxMax+'次）')));
+  L.push('');
+  L.push('—— 周末游戏时间 ——');
+  SLOTS.forEach(function(s){
+    var unlocked = (s.req==='xl') ? j.xl.ok : j.mx.ok;
+    var sd = fmtDate(slotDate(ws,s));
+    L.push(s.name + ' ' + s.time + '（' + sd.slice(5) + '）：' + (unlocked?'解锁，吃完饭即可玩':'未解锁'));
+  });
+  L.push('');
+  L.push('结论：' + (j.xl.ok&&j.mx.ok ? '两项全部达标，四个时段全部开放。' :
+        '小练' + (j.xl.ok?'达标':'不达标') + '，默写' + (j.mx.ok?'达标':'不达标') + '。'));
+  L.push('生成时间：' + fmtDate(new Date()) + ' ' + pad2(new Date().getHours()) + ':' + pad2(new Date().getMinutes()));
+  return L.join('\n');
+}
+
+/* ===================== 事件 ===================== */
+$('prevWk').addEventListener('click', function(){ curWeek = addDays(curWeek,-7); render(); });
+$('nextWk').addEventListener('click', function(){ curWeek = addDays(curWeek, 7); render(); });
+$('dDate').addEventListener('change', function(){ curDate = $('dDate').value || curDate; render(); });
+
+function addRec(type, inputEl){
+  var v = parseInt(inputEl.value, 10);
+  if(!v || v<1 || v>999){ toast('请填写有效的名次'); return; }
+  store.recs.push({ id: Date.now()+'-'+Math.random().toString(36).slice(2,7), date: curDate, type: type, rank: v });
+  inputEl.value = '';
+  saveStore(); render();
+  toast(type==='xl' ? '小练已记录：第'+v+'名' : '默写已添加：第'+v+'名');
+}
+$('addXl').addEventListener('click', function(){ addRec('xl', $('xlRank')); });
+$('addMx').addEventListener('click', function(){ addRec('mx', $('mxRank')); });
+$('xlRank').addEventListener('keydown', function(e){ if(e.key==='Enter') addRec('xl',$('xlRank')); });
+$('mxRank').addEventListener('keydown', function(e){ if(e.key==='Enter') addRec('mx',$('mxRank')); });
+
+$('genReport').addEventListener('click', function(){
+  var txt = buildReport();
+  $('report').value = txt;
+  if(navigator.share){
+    navigator.share({ title:'初三学习打卡 · 本周成绩单', text: txt }).catch(function(){});
+  }else{
+    copyText(txt);
+  }
+});
+
+function copyText(txt){
+  var ta = $('report'); ta.value = txt; ta.removeAttribute('readonly');
+  ta.select(); ta.setSelectionRange(0, txt.length);
+  var ok = false;
+  try{ ok = document.execCommand('copy'); }catch(e){}
+  ta.setAttribute('readonly','readonly');
+  if(ok) toast('已复制，粘贴到微信发给家长');
+  else toast('长按上方文字手动复制');
+}
+$('copyReport').addEventListener('click', function(){ copyText(buildReport()); });
+
+$('saveCfg').addEventListener('click', function(){
+  var a = parseInt($('cXl').value,10), b = parseInt($('cMx').value,10), c = parseInt($('cMax').value,10);
+  if(!(a>0) || !(b>0) || !(c>=0)){ toast('设置值不合法'); return; }
+  store.cfg = { xlLimit:a, mxLimit:b, mxMax:c };
+  saveStore(); render(); toast('设置已保存');
+});
+
+$('exportData').addEventListener('click', function(){
+  var txt = JSON.stringify(store, null, 2);
+  var blob = new Blob([txt], {type:'application/json'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '学习打卡备份_' + fmtDate(new Date()) + '.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  toast('备份文件已生成');
+});
+
+$('importData').addEventListener('click', function(){ $('importFile').click(); });
+$('importFile').addEventListener('change', function(e){
+  var f = e.target.files && e.target.files[0];
+  if(!f) return;
+  var fr = new FileReader();
+  fr.onload = function(){
+    try{
+      var o = JSON.parse(fr.result);
+      if(!o || !o.recs || !o.recs.length && !o.cfg) throw new Error('不是有效的备份文件');
+      store = { v:1, cfg:Object.assign({}, DEFAULT_CFG, o.cfg||{}), recs:o.recs||[], meal:o.meal||{} };
+      saveStore(); render();
+      toast('已导入 ' + store.recs.length + ' 条记录');
+    }catch(err){ toast('导入失败：' + err.message); }
+  };
+  fr.readAsText(f);
+  e.target.value = '';
+});
+
+$('clearData').addEventListener('click', function(){
+  if(confirm('确定清空全部记录吗？此操作不可恢复。')){
+    store = { v:1, cfg:Object.assign({},DEFAULT_CFG), recs:[], meal:{} };
+    saveStore(); render(); toast('已清空');
+  }
+});
+
+render();
+</script>
+</body>
+</html>
